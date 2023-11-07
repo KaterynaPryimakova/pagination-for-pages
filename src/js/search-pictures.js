@@ -1,5 +1,4 @@
 import { Axios } from 'axios';
-import 'axios/dist/';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import Notiflix from 'notiflix';
