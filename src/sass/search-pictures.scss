@@ -23,3 +23,33 @@
   padding: 4px 8px;
   cursor: pointer;
 }
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 10px;
+  align-content: center;
+}
+.photo-card {
+  width: 25%;
+  height: auto;
+}
+.photo-card img {
+  width: 100%;
+  display: block;
+}
+.info {
+  padding: 3px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: #a5a4a7a4;
+  border-top: none;
+}
+.info-item {
+  display: flex;
+  flex-direction: column;
+  width: calc((100% - 8px) / 4);
+  font-size: 12px;
+}
