@@ -6,12 +6,21 @@ import 'notiflix/dist/notiflix-3.2.6.min.css';
 
 const searchForm = document.querySelector('.js-search-form');
 const input = document.querySelector('input[name="searchQuery"]');
-const serchBtn = document.querySelector('.js-search-btn');
+const searchBtn = document.querySelector('.js-search-btn');
 const gallery = document.querySelector('.js-gallery');
 const loadMoreBtn = document.querySelector('.js-load-more');
 
 let page = 1;
 loadMoreBtn.style.display = 'none';
+searchBtn.disabled = true;
+
+input.addEventListener('input', changeBtn);
+
+function changeBtn() {
+  if (input.value.trim() !== '') {
+    searchBtn.disabled = false;
+  }
+}
 
 async function getResponse() {
   try {
@@ -30,7 +39,6 @@ async function getResponse() {
       },
     });
 
-    //   const response = await responsePromise.json();
     return response;
   } catch (error) {
     console.log(error);
@@ -46,9 +54,12 @@ async function handleSubmit(evt) {
   const resultData = response.data.hits;
 
   if (resultData.length === 0) {
+    loadMoreBtn.style.display = 'none';
     Notiflix.Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
     );
+  } else {
+    loadMoreBtn.style.display = 'block';
   }
 
   gallery.innerHTML = createMarkup(resultData);
@@ -56,8 +67,6 @@ async function handleSubmit(evt) {
   const lightbox = new SimpleLightbox('.js-gallery a', {
     captionDelay: 250,
   });
-
-  loadMoreBtn.style.display = 'block';
 
   loadMoreBtn.addEventListener('click', loadMore);
 }

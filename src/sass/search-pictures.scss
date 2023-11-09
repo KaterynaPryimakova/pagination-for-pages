@@ -23,6 +23,13 @@
   padding: 4px 8px;
   cursor: pointer;
 }
+
+.search-btn[disabled] {
+  cursor: not-allowed;
+  background-color: #fffc43a1;
+  color: rgba(2, 2, 78, 0.616);
+}
+
 .gallery {
   width: 100%;
   display: flex;
