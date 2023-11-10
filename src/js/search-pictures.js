@@ -18,46 +18,73 @@ searchBtn.disabled = true;
 loadMoreBtn.style.display = 'none';
 let page = 1;
 
-async function handleSubmit(evt) {
+async function getResponse() {
   try {
-    evt.preventDefault();
+    const BASE_URL = `https://pixabay.com/api/`;
+    const userQuery = input.value;
 
-    if (input.value) {
-      page = 1;
-    }
-
-    const response = await getResponse();
-    const resultData = response.data.hits;
-    const totalHits = response.data.totalHits;
-    console.log(totalHits);
-
-    if (resultData.length === 0) {
-      loadMoreBtn.style.display = 'none';
-      Notiflix.Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.'
-      );
-    } else {
-      loadMoreBtn.style.display = 'block';
-      Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
-    }
-
-    gallery.innerHTML = createMarkup(resultData);
-
-    const lightbox = new SimpleLightbox('.js-gallery a', {
-      captionDelay: 250,
+    const response = await axios.get(BASE_URL, {
+      params: {
+        key: '40508767-6cd82c1efe9e2d82c03812311',
+        q: userQuery,
+        page: page++,
+        per_page: 40,
+        image_type: 'photo',
+        orientation: 'horizontal',
+        safesearch: true,
+      },
     });
+
+    return response;
   } catch (error) {
     console.log(error);
   }
+}
 
-  //   const { height: cardHeight } = document
-  //     .querySelector('.gallery')
-  //     .firstElementChild.getBoundingClientRect();
+let lastRequest = '';
 
-  //   window.scrollBy({
-  //     top: cardHeight * 2,
-  //     behavior: 'smooth',
-  //   });
+async function handleSubmit(evt) {
+  evt.preventDefault();
+
+  let currentRequest = input.value;
+
+  if (currentRequest) {
+    page = 1;
+  }
+
+  if (currentRequest === lastRequest) {
+    Notiflix.Notify.info(
+      `The request has already been sent. Please enter a new request`
+    );
+    searchBtn.disabled = true;
+    return;
+  }
+
+  const response = await getResponse();
+  console.log(response);
+  const resultData = response.data.hits;
+  const totalHits = response.data.totalHits;
+  console.log(totalHits);
+
+  if (resultData.length === 0) {
+    loadMoreBtn.style.display = 'none';
+    Notiflix.Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+  } else {
+    loadMoreBtn.style.display = 'block';
+    Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
+  }
+
+  lastRequest = currentRequest;
+
+  gallery.innerHTML = createMarkup(resultData);
+
+  searchBtn.disabled = true;
+
+  const lightbox = new SimpleLightbox('.js-gallery a', {
+    captionDelay: 250,
+  });
 }
 
 function changeBtn() {
@@ -85,29 +112,6 @@ async function loadMore() {
     if (currentPage === totalPages) {
       loadMoreBtn.style.display = 'none';
     }
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-async function getResponse() {
-  try {
-    const BASE_URL = 'https://pixabay.com/api';
-    const userQuery = input.value;
-
-    const response = await axios.get(BASE_URL, {
-      params: {
-        key: '40508767-6cd82c1efe9e2d82c03812311',
-        q: userQuery,
-        page: page++,
-        per_page: 40,
-        image_type: 'photo',
-        orientation: 'horizontal',
-        safesearch: true,
-      },
-    });
-
-    return response;
   } catch (error) {
     console.log(error);
   }
