@@ -16,7 +16,7 @@ loadMoreBtn.addEventListener('click', loadMore);
 
 searchBtn.disabled = true;
 loadMoreBtn.style.display = 'none';
-let numPage = 10;
+let numPage = 1;
 
 async function getResponse(numPage) {
   try {
