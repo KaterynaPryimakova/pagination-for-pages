@@ -49,7 +49,7 @@ async function handleSubmit(evt) {
   let currentRequest = input.value;
 
   if (currentRequest) {
-    page = 1;
+    numPage = 1;
   }
 
   if (currentRequest === lastRequest) {
@@ -65,6 +65,7 @@ async function handleSubmit(evt) {
   const response = await getResponse(numPage++);
   const resultData = response.data.hits;
   const totalHits = response.data.totalHits;
+  console.log(response.config.params.page);
 
   if (resultData.length === 0) {
     loadMoreBtn.style.display = 'none';
@@ -73,6 +74,8 @@ async function handleSubmit(evt) {
       'Sorry, there are no images matching your search query. Please try again.'
     );
     searchForm.reset();
+  } else if (resultData.length < 40) {
+    loadMoreBtn.style.display = 'none';
   } else {
     loadMoreBtn.style.display = 'block';
     Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
@@ -105,6 +108,7 @@ async function loadMore() {
   const resultData = response.data.hits;
 
   gallery.insertAdjacentHTML('beforeend', createMarkup(resultData));
+  console.log(response.config.params.page);
 
   const { height: cardHeight } = document
     .querySelector('.gallery')
