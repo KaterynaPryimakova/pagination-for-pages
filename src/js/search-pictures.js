@@ -83,7 +83,6 @@ async function handleSubmit(evt) {
   gallery.innerHTML = createMarkup(resultData);
 
   searchBtn.disabled = true;
-  searchForm.reset();
 
   const lightbox = new SimpleLightbox('.js-gallery a', {
     captionDelay: 250,
@@ -101,34 +100,33 @@ function changeBtn() {
 }
 
 async function loadMore() {
-  try {
-    const response = await getResponse(numPage++);
+  const response = await getResponse(numPage++);
 
-    const resultData = response.data.hits;
+  const resultData = response.data.hits;
 
-    gallery.insertAdjacentHTML('beforeend', createMarkup(resultData));
+  gallery.insertAdjacentHTML('beforeend', createMarkup(resultData));
 
-    const { height: cardHeight } = document
-      .querySelector('.gallery')
-      .firstElementChild.getBoundingClientRect();
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
 
-    window.scrollBy({
-      top: cardHeight * 2,
-      behavior: 'smooth',
-    });
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
 
-    const currentPage = response.config.params.page;
-    const totalPages = Math.round(response.data.totalHits / 40);
+  const currentPage = response.config.params.page;
+  const totalPages = Math.round(response.data.totalHits / 40);
 
-    if (currentPage === totalPages) {
-      loadMoreBtn.style.display = 'none';
-      Notiflix.Report.info(
-        '<(^=^)>',
-        "We're sorry, but you've reached <br/><br/> the end of search results."
-      );
-    }
-  } catch (error) {
-    console.log(error);
+  if (currentPage === totalPages) {
+    loadMoreBtn.style.display = 'none';
+    Notiflix.Report.info(
+      'Refresh the page',
+      "We're sorry, but you've reached the end of search results."
+    );
+    searchBtn.disabled = true;
+    input.disabled = true;
+    return;
   }
 }
 
@@ -165,3 +163,47 @@ function createMarkup(arr) {
     )
     .join('');
 }
+
+// *********************************************
+
+document.addEventListener('DOMContentLoaded', function () {
+  const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+
+  window.addEventListener('scroll', function () {
+    if (
+      document.body.scrollTop > 20 ||
+      document.documentElement.scrollTop > 20
+    ) {
+      scrollToTopBtn.style.display = 'block';
+    } else {
+      scrollToTopBtn.style.display = 'none';
+    }
+  });
+
+  scrollToTopBtn.addEventListener('click', function () {
+    scrollToTop(1000);
+  });
+
+  function scrollToTop(duration) {
+    const start = window.pageYOffset;
+    const startTime = performance.now();
+
+    function animateScroll(currentTime) {
+      const timeElapsed = currentTime - startTime;
+      const run = easeInOutQuad(timeElapsed, start, -start, duration);
+      window.scrollTo(0, run);
+      if (timeElapsed < duration) {
+        requestAnimationFrame(animateScroll);
+      }
+    }
+
+    function easeInOutQuad(t, b, c, d) {
+      t /= d / 2;
+      if (t < 1) return (c / 2) * t * t + b;
+      t--;
+      return (-c / 2) * (t * (t - 2) - 1) + b;
+    }
+
+    requestAnimationFrame(animateScroll);
+  }
+});
