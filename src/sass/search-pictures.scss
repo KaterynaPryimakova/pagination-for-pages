@@ -77,3 +77,9 @@
   display: block;
   margin: 13px auto;
 }
+
+.load-more[disabled] {
+  cursor: not-allowed;
+  background-color: #fffc43a1;
+  color: rgba(2, 2, 78, 0.616);
+}
