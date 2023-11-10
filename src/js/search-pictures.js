@@ -53,25 +53,26 @@ async function handleSubmit(evt) {
   }
 
   if (currentRequest === lastRequest) {
-    Notiflix.Notify.info(
-      `The request has already been sent. Please enter a new request`
+    Notiflix.Report.info(
+      '',
+      'The request has already been sent. Please enter a new request'
     );
+    searchForm.reset();
     searchBtn.disabled = true;
     return;
   }
 
   const response = await getResponse(numPage++);
-  console.log(response);
-  console.log(page);
   const resultData = response.data.hits;
   const totalHits = response.data.totalHits;
-  console.log('totalHits:', totalHits);
 
   if (resultData.length === 0) {
     loadMoreBtn.style.display = 'none';
-    Notiflix.Notify.failure(
+    Notiflix.Report.failure(
+      '',
       'Sorry, there are no images matching your search query. Please try again.'
     );
+    searchForm.reset();
   } else {
     loadMoreBtn.style.display = 'block';
     Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
@@ -82,6 +83,7 @@ async function handleSubmit(evt) {
   gallery.innerHTML = createMarkup(resultData);
 
   searchBtn.disabled = true;
+  searchForm.reset();
 
   const lightbox = new SimpleLightbox('.js-gallery a', {
     captionDelay: 250,
@@ -101,16 +103,22 @@ function changeBtn() {
 async function loadMore() {
   try {
     const response = await getResponse(numPage++);
-    console.log(response);
 
     const resultData = response.data.hits;
 
     gallery.insertAdjacentHTML('beforeend', createMarkup(resultData));
 
+    const { height: cardHeight } = document
+      .querySelector('.gallery')
+      .firstElementChild.getBoundingClientRect();
+
+    window.scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
+
     const currentPage = response.config.params.page;
     const totalPages = Math.round(response.data.totalHits / 40);
-    console.log(currentPage);
-    console.log(totalPages);
 
     if (currentPage === totalPages) {
       loadMoreBtn.style.display = 'none';
