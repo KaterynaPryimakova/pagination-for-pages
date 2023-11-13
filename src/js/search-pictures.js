@@ -24,11 +24,9 @@ let lastRequest = '';
 async function handleSubmit(evt) {
   evt.preventDefault();
 
-  let currentRequest = input.value;
+  numPage = 1;
 
-  if (currentRequest) {
-    numPage = 1;
-  }
+  let currentRequest = input.value;
 
   if (currentRequest === lastRequest) {
     Notiflix.Report.info(
@@ -40,10 +38,11 @@ async function handleSubmit(evt) {
     return;
   }
 
-  const response = await getResponse(numPage++);
+  const response = await getResponse(numPage);
   const resultData = response.data.hits;
   const totalHits = response.data.totalHits;
   const per_page = response.config.params.per_page;
+  console.log(response.config.params.page);
 
   if (resultData.length === 0) {
     loadMoreBtn.style.display = 'none';
@@ -83,12 +82,13 @@ function changeBtn() {
 }
 
 async function loadMore() {
-  const response = await getResponse(numPage++);
+  const response = await getResponse((numPage += 1));
 
   const resultData = response.data.hits;
 
   gallery.insertAdjacentHTML('beforeend', createMarkup(resultData));
   lightbox.refresh();
+  console.log(response.config.params.page);
 
   const { height: cardHeight } = document
     .querySelector('.gallery')
