@@ -31,3 +31,13 @@ export function createMarkup(arr) {
     )
     .join('');
 }
+
+export function createMarkupPagination(totalPages) {
+  const arrPage = [];
+  for (let i = 1; i <= totalPages; i += 1) {
+    const item = `<li class="item-page">${i}</li>`;
+    arrPage.push(item);
+  }
+  const stringPage = arrPage.join('');
+  return stringPage;
+}
